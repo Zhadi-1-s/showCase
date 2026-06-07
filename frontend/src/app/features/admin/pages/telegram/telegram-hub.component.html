@@ -1,0 +1,356 @@
+<div class="px-4 py-6 lg:px-0 lg:py-0">
+  <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wide text-sky-600">Интеграция</p>
+      <h1 class="mt-1 text-2xl font-bold text-slate-900">Telegram</h1>
+      <p class="mt-1 text-sm text-slate-500">Публикация товаров в Telegram-каналы через бота</p>
+    </div>
+    <button type="button" class="btn-secondary text-sm" (click)="reload()" [disabled]="loading()">
+      <app-icon name="refresh" class="h-4 w-4" />
+      Обновить
+    </button>
+  </div>
+
+  <div class="mb-6 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 to-white p-4 sm:p-5">
+    <div class="flex flex-wrap items-start gap-3">
+      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-white shadow-sm">
+        <app-icon name="send" class="h-5 w-5" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold text-sky-950">Telegram Bot API</p>
+        <p class="mt-1 text-sm text-sky-900/80">
+          Бот публикует карточку товара с фото, ценой и ссылкой на витрину. Добавьте бота
+          администратором канала с правом публикации сообщений.
+        </p>
+        @if (botUsername()) {
+          <p class="mt-2 text-sm">
+            Бот:
+            <a
+              [href]="'https://t.me/' + botUsername()"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-medium text-sky-700 hover:underline"
+            >
+              {{ '@' + botUsername() }}
+            </a>
+          </p>
+        }
+      </div>
+      @if (!botConfigured()) {
+        <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-900">
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+          Токен не задан
+        </span>
+      } @else if (botConnected()) {
+        <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+          Бот подключён
+        </span>
+      } @else {
+        <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+          <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+          Ошибка бота
+        </span>
+      }
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ error() }}
+    </p>
+  }
+
+  @if (stats(); as s) {
+    <div class="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <button
+        type="button"
+        class="rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-sky-200"
+        [class.ring-2]="filter() === 'published'"
+        [class.ring-sky-400]="filter() === 'published'"
+        (click)="setFilter('published')"
+      >
+        <p class="text-xs text-slate-500">В каналах</p>
+        <p class="text-2xl font-bold text-emerald-700">{{ s.published }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('error')">
+        <p class="text-xs text-slate-500">Ошибки</p>
+        <p class="text-2xl font-bold text-red-600">{{ s.errors }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('not_published')">
+        <p class="text-xs text-slate-500">Не опубликовано</p>
+        <p class="text-2xl font-bold text-slate-700">{{ s.notPublished }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('all')">
+        <p class="text-xs text-slate-500">Всего товаров</p>
+        <p class="text-2xl font-bold text-sky-700">{{ s.total }}</p>
+      </button>
+    </div>
+  }
+
+  <section class="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">Telegram-каналы и группы</h2>
+        <p class="mt-1 text-xs text-slate-500">username канала (&#64;…) или числовой id -100…</p>
+      </div>
+      @if (canAddChannel()) {
+        <button type="button" class="btn-primary text-sm !bg-sky-500 hover:!bg-sky-600" (click)="toggleChannelForm()">
+          <app-icon name="plus" class="h-4 w-4" />
+          Добавить канал или группу
+        </button>
+      }
+    </div>
+
+    @if (canAddChannel() && showChannelForm()) {
+      <div class="mt-4 rounded-xl border border-sky-100 bg-sky-50/50 p-4">
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-600">Название</label>
+            <input type="text" class="input-field" placeholder="Витрина Lombard" [value]="channelForm().name" (input)="updateChannelField('name', $any($event.target).value)" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-600">Chat ID *</label>
+            <input type="text" class="input-field" placeholder="my_channel или -1001234567890" [value]="channelForm().chatId" (input)="updateChannelField('chatId', $any($event.target).value)" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-600">Username (для ссылки)</label>
+            <input type="text" class="input-field" placeholder="my_channel" [value]="channelForm().username" (input)="updateChannelField('username', $any($event.target).value)" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-600">Описание</label>
+            <input type="text" class="input-field" [value]="channelForm().description" (input)="updateChannelField('description', $any($event.target).value)" />
+          </div>
+        </div>
+        @if (channelError()) {
+          <p class="mt-2 text-sm text-red-600">{{ channelError() }}</p>
+        }
+        <div class="mt-3 flex gap-2">
+          <button type="button" class="btn-primary !bg-sky-500 hover:!bg-sky-600" [disabled]="channelSaving()" (click)="saveChannel()">
+            Сохранить
+          </button>
+          <button type="button" class="btn-secondary" (click)="toggleChannelForm()">Отмена</button>
+        </div>
+      </div>
+    }
+
+    @if (channels().length === 0 && !showChannelForm()) {
+      <div class="mt-4 rounded-xl border border-dashed border-sky-200 bg-sky-50/40 py-8 text-center">
+        <p class="text-sm text-slate-600">Каналы ещё не подключены.</p>
+        @if (canAddChannel()) {
+          <button type="button" class="btn-primary mt-4 text-sm !bg-sky-500 hover:!bg-sky-600" (click)="toggleChannelForm()">
+            <app-icon name="plus" class="h-4 w-4" />
+            Добавить первый канал
+          </button>
+        }
+      </div>
+    } @else if (channels().length === 0 && canAddChannel()) {
+      <p class="mt-4 text-center text-sm text-slate-500">Заполните форму выше и сохраните канал.</p>
+    } @else {
+      <ul class="mt-4 divide-y divide-slate-100">
+        @for (ch of channels(); track ch.id) {
+          <li class="flex flex-wrap items-center justify-between gap-3 py-3">
+            <div>
+              <p class="font-medium text-slate-900">{{ ch.name }}</p>
+              <p class="text-xs text-slate-500">
+                {{ ch.chatId }}
+                @if (ch.username) {
+                  <span> · {{ '@' + ch.username }}</span>
+                }
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-emerald-100]="ch.isActive"
+                [class.text-emerald-800]="ch.isActive"
+                [class.bg-slate-100]="!ch.isActive"
+                [class.text-slate-500]="!ch.isActive"
+              >
+                {{ ch.isActive ? 'Активен' : 'Выключен' }}
+              </span>
+              @if (isAdmin()) {
+                  <button type="button" class="text-xs text-sky-600 hover:underline" (click)="toggleChannelActive(ch)">
+                    {{ ch.isActive ? 'Выключить' : 'Включить' }}
+                  </button>
+                  <button type="button" class="text-xs text-red-600 hover:underline" (click)="removeChannel(ch)">
+                    Удалить
+                  </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-lg font-semibold text-slate-900">Товары и публикации</h2>
+      @if (filter() !== 'all') {
+        <button type="button" class="text-sm text-sky-600 hover:underline" (click)="setFilter('all')">
+          Сбросить фильтр
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="flex justify-center py-16">
+        <span class="h-8 w-8 animate-spin rounded-full border-2 border-sky-500 border-t-transparent"></span>
+      </div>
+    } @else if (activeChannels().length === 0) {
+      <p class="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">
+        Добавьте активный канал, чтобы публиковать товары
+      </p>
+    } @else if (filteredRows().length === 0) {
+      <p class="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">
+        Нет товаров по выбранному фильтру
+      </p>
+    } @else {
+      <div class="hidden overflow-hidden rounded-2xl border border-slate-200 md:block">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3">Товар</th>
+              <th class="px-4 py-3">Цена</th>
+              <th class="px-4 py-3">Склад</th>
+              <th class="px-4 py-3">Канал</th>
+              <th class="px-4 py-3">Статус</th>
+              <th class="px-4 py-3 text-right">Действия</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+            @for (row of filteredRows(); track row.productId) {
+              <tr class="hover:bg-slate-50/80">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-3">
+                    @if (row.photo) {
+                      <img [src]="row.photo" alt="" class="h-11 w-11 rounded-lg object-cover ring-1 ring-slate-200" />
+                    } @else {
+                      <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+                        <app-icon name="package" class="h-5 w-5" />
+                      </span>
+                    }
+                    <div>
+                      <p class="font-medium text-slate-900">{{ row.name }}</p>
+                      <p class="text-xs capitalize text-slate-500">{{ row.category }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-medium">{{ row.price | appCurrency }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ row.productStatus }}</td>
+                <td class="px-4 py-3">
+                  <select
+                    class="input-field py-1.5 text-xs"
+                    [value]="getSelectedChannel(row.productId)"
+                    (change)="setSelectedChannel(row.productId, $any($event.target).value)"
+                  >
+                    @for (ch of activeChannels(); track ch.id) {
+                      <option [value]="ch.id">{{ ch.name }}</option>
+                    }
+                  </select>
+                </td>
+                <td class="px-4 py-3">
+                  @if (publishedInChannel(row, getSelectedChannel(row.productId)); as pub) {
+                    <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                      {{ pubStatusLabels[pub.status] }}
+                    </span>
+                    @if (pub.postUrl) {
+                      <a [href]="pub.postUrl" target="_blank" rel="noopener noreferrer" class="mt-1 block text-xs text-sky-600 hover:underline">
+                        Открыть пост ↗
+                      </a>
+                    }
+                    <p class="mt-1 text-xs text-slate-400">{{ formatSyncDate(pub.lastSyncAt) }}</p>
+                  } @else {
+                    <span [class]="statusBadgeClass(row.summaryStatus)">
+                      {{ statusLabels[row.summaryStatus] }}
+                    </span>
+                  }
+                  @for (pub of row.publications; track pub.id) {
+                    @if (pub.channelId !== getSelectedChannel(row.productId) && pub.status === 'published') {
+                      <p class="mt-1 text-xs text-slate-500">Также в: {{ pub.channelName }}</p>
+                    }
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap justify-end gap-2">
+                    @if (canPublish(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg bg-sky-500 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-sky-600 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId, getSelectedChannel(row.productId))"
+                        (click)="publish(row)"
+                      >
+                        В Telegram
+                      </button>
+                    }
+                    @if (canSync(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId, getSelectedChannel(row.productId))"
+                        (click)="sync(row)"
+                      >
+                        Синхр.
+                      </button>
+                    }
+                    @if (canUnpublish(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId, getSelectedChannel(row.productId))"
+                        (click)="unpublish(row)"
+                      >
+                        Снять
+                      </button>
+                    }
+                    <a
+                      [routerLink]="['/admin/products', row.productId, 'edit']"
+                      class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                    >
+                      Товар
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="space-y-3 md:hidden">
+        @for (row of filteredRows(); track row.productId) {
+          <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex gap-3">
+              @if (row.photo) {
+                <img [src]="row.photo" alt="" class="h-14 w-14 rounded-xl object-cover" />
+              }
+              <div class="min-w-0 flex-1">
+                <p class="font-semibold text-slate-900">{{ row.name }}</p>
+                <p class="text-sm text-brand-700">{{ row.price | appCurrency }}</p>
+                <span [class]="statusBadgeClass(row.summaryStatus)" class="mt-2">{{ statusLabels[row.summaryStatus] }}</span>
+              </div>
+            </div>
+            <select
+              class="input-field mt-3 py-2 text-sm"
+              [value]="getSelectedChannel(row.productId)"
+              (change)="setSelectedChannel(row.productId, $any($event.target).value)"
+            >
+              @for (ch of activeChannels(); track ch.id) {
+                <option [value]="ch.id">{{ ch.name }}</option>
+              }
+            </select>
+            <div class="mt-3 flex flex-wrap gap-2">
+              @if (canPublish(row)) {
+                <button type="button" class="btn-primary flex-1 justify-center py-1.5 text-xs !bg-sky-500 hover:!bg-sky-600" (click)="publish(row)">В Telegram</button>
+              }
+              @if (canUnpublish(row)) {
+                <button type="button" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-600" (click)="unpublish(row)">Снять</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>

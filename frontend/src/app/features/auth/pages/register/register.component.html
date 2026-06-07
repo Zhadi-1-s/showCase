@@ -1,0 +1,89 @@
+<div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">
+  <div class="auth-card">
+    <div class="mb-6 flex items-center gap-3">
+      <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+        <app-icon name="user-plus" class="h-6 w-6" />
+      </span>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">Регистрация</h1>
+        <p class="text-sm text-slate-500">Аккаунт сотрудника ломбарда</p>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    @if (successMessage()) {
+      <p class="mb-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700" role="status">
+        {{ successMessage() }} Перенаправление на вход…
+      </p>
+    }
+
+    <form class="space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="name">Имя</label>
+        <input id="name" type="text" formControlName="name" class="input-field" />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="email">Email</label>
+        <input id="email" type="email" formControlName="email" class="input-field" />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="password">Пароль</label>
+        <input id="password" type="password" formControlName="password" class="input-field" />
+        @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+          <p class="mt-1 text-xs text-red-600">Минимум 8 символов</p>
+        }
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="confirmPassword">Повтор пароля</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" class="input-field" />
+        @if (form.touched && form.hasError('passwordMismatch')) {
+          <p class="mt-1 text-xs text-red-600">Пароли не совпадают</p>
+        }
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="branch">Филиал</label>
+        <select id="branch" formControlName="branch" class="input-field" [disabled]="branchesLoading()">
+          <option value="">— без филиала —</option>
+          @for (b of branches(); track b._id) {
+            <option [value]="b._id">{{ b.name }} — {{ b.address }}</option>
+          }
+        </select>
+        @if (branchesLoading()) {
+          <p class="mt-1 text-xs text-slate-500">Загрузка филиалов…</p>
+        } @else if (branches().length === 0) {
+          <p class="mt-1 text-xs text-amber-600">Филиалов нет. Добавьте в MongoDB.</p>
+        }
+        <button
+          type="button"
+          class="mt-2 text-xs font-medium text-brand-600 hover:underline"
+          (click)="loadBranches()"
+          [disabled]="branchesLoading()"
+        >
+          Обновить список филиалов
+        </button>
+      </div>
+
+      <button type="submit" class="btn-primary w-full" [disabled]="loading()">
+        @if (loading()) {
+          Регистрация…
+        } @else {
+          Зарегистрироваться
+        }
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-slate-600">
+      Уже есть аккаунт?
+      <a routerLink="/auth/login" class="font-medium text-brand-600 hover:underline">Войти</a>
+    </p>
+  </div>
+</div>

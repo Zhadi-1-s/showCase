@@ -1,0 +1,61 @@
+<div class="min-h-[calc(100vh-4rem)] bg-slate-100">
+  <div class="mx-auto flex max-w-7xl gap-0 lg:gap-6 lg:px-4 lg:py-6">
+    <aside
+      class="hidden w-64 shrink-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex"
+    >
+      <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Админка</p>
+      <nav class="mt-3 space-y-1">
+        <a routerLink="/admin" routerLinkActive="admin-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="admin-nav-link">
+          <app-icon name="grid" class="h-5 w-5" />
+          Обзор
+        </a>
+        <a routerLink="/admin/products" routerLinkActive="admin-nav-active" class="admin-nav-link">
+          <app-icon name="package" class="h-5 w-5" />
+          Товары
+        </a>
+        <a routerLink="/admin/olx" routerLinkActive="admin-nav-active" class="admin-nav-link">
+          <app-icon name="external-link" class="h-5 w-5" />
+          OLX
+        </a>
+        <a routerLink="/admin/telegram" routerLinkActive="admin-nav-active" class="admin-nav-link">
+          <app-icon name="send" class="h-5 w-5" />
+          Telegram
+        </a>
+        @if (auth.currentUser$ | async; as user) {
+          @if (user.role === 'admin') {
+            <a routerLink="/admin/branches" routerLinkActive="admin-nav-active" class="admin-nav-link">
+              <app-icon name="map-pin" class="h-5 w-5" />
+              Филиалы
+            </a>
+          }
+        }
+      </nav>
+      <div class="mt-auto border-t border-slate-100 pt-4">
+        <a routerLink="/showcase" class="admin-nav-link text-slate-500">
+          <app-icon name="home" class="h-5 w-5" />
+          На витрину
+        </a>
+        @if (auth.currentUser$ | async; as user) {
+          <p class="mt-3 truncate px-3 text-xs text-slate-400">{{ user.email }}</p>
+        }
+      </div>
+    </aside>
+
+    <div class="min-w-0 flex-1">
+      <div class="mb-4 flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-2 lg:hidden">
+        <a routerLink="/admin" routerLinkActive="admin-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="admin-nav-pill">Обзор</a>
+        <a routerLink="/admin/products" routerLinkActive="admin-nav-active" class="admin-nav-pill">Товары</a>
+        <a routerLink="/admin/olx" routerLinkActive="admin-nav-active" class="admin-nav-pill">OLX</a>
+        <a routerLink="/admin/telegram" routerLinkActive="admin-nav-active" class="admin-nav-pill">Telegram</a>
+        @if (auth.currentUser$ | async; as user) {
+          @if (user.role === 'admin') {
+            <a routerLink="/admin/branches" routerLinkActive="admin-nav-active" class="admin-nav-pill">Филиалы</a>
+          }
+        }
+      </div>
+      <div class="lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lombard Showcase — Платформа для ломбардов</title>
+  <meta name="description" content="Витрина, админка, автопубликация на OLX.kz и Telegram. Готовая платформа для сети ломбардов в Казахстане." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#f0f7ff', 100: '#e0effe', 200: '#b9dffd', 300: '#7cc5fc',
+              400: '#36a6f8', 500: '#0c87e8', 600: '#0069c4', 700: '#0154a0',
+              800: '#064884', 900: '#0b3c6e', 950: '#082849',
+            },
+            gold: {
+              50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d',
+              400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .hero-glow {
+      background: radial-gradient(ellipse at top right, rgba(245,158,11,0.18), transparent 55%),
+                  radial-gradient(ellipse at bottom left, rgba(12,135,232,0.15), transparent 50%);
+    }
+    .mockup-shadow { box-shadow: 0 25px 50px -12px rgba(15,23,42,0.25), 0 0 0 1px rgba(148,163,184,0.1); }
+    .gradient-text {
+      background: linear-gradient(135deg, #fcd34d, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .float { animation: float 5s ease-in-out infinite; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation: fadeUp 0.7s ease-out forwards; }
+    .slider-track { display: flex; transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1); }
+    .slider-slide { min-width: 100%; flex-shrink: 0; }
+    .slider-btn { transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+    .slider-btn:hover:not(:disabled) { transform: scale(1.05); }
+    .slider-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .slider-dot { transition: width 0.3s, background 0.3s; }
+    .slider-dot.active { width: 2rem; background-color: #0c87e8; }
+  </style>
+</head>
+<body class="font-sans text-slate-800 antialiased">
+
+  <!-- NAV -->
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-lg">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+      <a href="#" class="flex items-center gap-2.5">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-600/30">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </span>
+        <span class="text-lg font-bold text-white">Lombard <span class="text-gold-400">Showcase</span></span>
+      </a>
+      <nav class="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
+        <a href="#features" class="transition hover:text-white">Возможности</a>
+        <a href="#screenshots" class="transition hover:text-white">Скриншоты</a>
+        <a href="#integrations" class="transition hover:text-white">Интеграции</a>
+        <a href="#how" class="transition hover:text-white">Как работает</a>
+        <a href="#contact" class="rounded-xl bg-gold-500 px-5 py-2.5 font-semibold text-slate-900 transition hover:bg-gold-400">Связаться</a>
+      </nav>
+      <a href="#contact" class="rounded-xl bg-gold-500 px-4 py-2 text-sm font-semibold text-slate-900 md:hidden">Связаться</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-brand-950 pt-28 text-white">
+    <div class="hero-glow pointer-events-none absolute inset-0"></div>
+    <div class="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-brand-600/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-gold-500/10 blur-3xl"></div>
+
+    <div class="relative mx-auto max-w-6xl px-4 pb-20 pt-12 lg:pb-28 lg:pt-16">
+      <div class="grid items-center gap-12 lg:grid-cols-2">
+        <div class="fade-up">
+          <p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-gold-300">
+            <span>✨</span> Готовая SaaS-платформа для ломбардов
+          </p>
+          <h1 class="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-[3.25rem]">
+            Витрина, склад и&nbsp;автопубликация
+            <span class="gradient-text"> в одном месте</span>
+          </h1>
+          <p class="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
+            Lombard Showcase — платформа для сети ломбардов: онлайн-каталог с фото и ценами, админ-панель, автопостинг на <strong class="text-white">OLX.kz</strong> и в <strong class="text-white">Telegram-каналы</strong> через бота.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a href="#contact" class="inline-flex items-center gap-2 rounded-xl bg-gold-500 px-7 py-3.5 font-semibold text-slate-900 shadow-lg shadow-gold-500/25 transition hover:bg-gold-400">
+              Получить демо
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <a href="#features" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-7 py-3.5 font-medium backdrop-blur transition hover:bg-white/10">
+              Смотреть возможности
+            </a>
+          </div>
+          <div class="mt-10 flex flex-wrap gap-6 text-sm text-slate-400">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Мультфилиальность</span>
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Цены в ₸</span>
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Готово к Vercel</span>
+          </div>
+        </div>
+
+        <!-- Hero screenshot -->
+        <div class="float relative lg:ml-4">
+          <div class="mockup-shadow overflow-hidden rounded-2xl border border-white/10 bg-white">
+            <div class="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3">
+              <span class="h-3 w-3 rounded-full bg-red-400"></span>
+              <span class="h-3 w-3 rounded-full bg-gold-400"></span>
+              <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+              <span class="ml-3 text-xs text-slate-400">lombard-showcase.kz/showcase</span>
+            </div>
+            <button type="button" class="block w-full cursor-zoom-in" onclick="openLightbox('images/showcase-home.png', 'Витрина ломбарда — главная страница')">
+              <img src="images/showcase-home.png" alt="Витрина Lombard Showcase — главная страница" class="w-full" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="border-b border-slate-200 bg-white py-6">
+    <div class="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-10 gap-y-4 px-4 text-center text-sm text-slate-600">
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold-100 text-gold-600">🛡️</span>
+        Проверенное состояние товаров
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600">🏪</span>
+        Сеть филиалов
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">✨</span>
+        Актуальные цены в реальном времени
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Всё для продажи ломбарда онлайн</h2>
+        <p class="mt-4 text-lg text-slate-500">От добавления товара до публикации на маркетплейсах — автоматически</p>
+      </div>
+
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-brand-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">🏠</div>
+          <h3 class="text-lg font-bold text-slate-900">Онлайн-витрина</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Каталог с поиском, фильтрами, карточками товаров с фото, ценой в ₸, состоянием и кнопкой «Связаться с филиалом».</p>
+        </div>
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-brand-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 transition group-hover:bg-emerald-600 group-hover:text-white">📊</div>
+          <h3 class="text-lg font-bold text-slate-900">Админ-панель</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Дашборд со статистикой: всего товаров, на витрине, в наличии, стоимость склада. Управление по статусам и категориям.</p>
+        </div>
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-brand-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold-100 text-gold-600 transition group-hover:bg-gold-600 group-hover:text-white">📦</div>
+          <h3 class="text-lg font-bold text-slate-900">Управление товарами</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Добавление товаров с фото, описанием, брендом, категорией, состоянием (1–10), ценой. Статусы: в наличии, продан, скрыт, зарезервирован.</p>
+        </div>
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-violet-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-violet-600 transition group-hover:bg-violet-600 group-hover:text-white">🟣</div>
+          <h3 class="text-lg font-bold text-slate-900">Интеграция OLX.kz</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Автопубликация на OLX: фото, описание, цена через API. Автоснятие при продаже. Синхронизация цен. Город по умолчанию.</p>
+        </div>
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-sky-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-600 transition group-hover:bg-sky-600 group-hover:text-white">✈️</div>
+          <h3 class="text-lg font-bold text-slate-900">Telegram-бот</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Публикация карточек товаров в каналы через <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs">@autoPostingShowcasebot</code> — фото, цена, ссылка на витрину.</p>
+        </div>
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-brand-200 hover:shadow-lg">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition group-hover:bg-slate-800 group-hover:text-white">🏢</div>
+          <h3 class="text-lg font-bold text-slate-900">Мультифилиальность</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">Каждый филиал видит только свои данные. Контакты, адрес, часы работы — на карточке товара и витрине.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section id="screenshots" class="py-20">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Реальный интерфейс платформы</h2>
+        <p class="mt-4 text-lg text-slate-500">Скриншоты из работающей системы — витрина, админка, интеграции</p>
+      </div>
+
+      <!-- Screenshot Slider -->
+      <div class="relative mt-14" id="screenshotSlider">
+        <!-- Prev -->
+        <button type="button" id="sliderPrev" onclick="sliderPrev()" aria-label="Предыдущий скриншот"
+          class="slider-btn absolute -left-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg sm:-left-5 sm:h-14 sm:w-14">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        <!-- Next -->
+        <button type="button" id="sliderNext" onclick="sliderNext()" aria-label="Следующий скриншот"
+          class="slider-btn absolute -right-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-lg sm:-right-5 sm:h-14 sm:w-14">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="mockup-shadow overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <!-- Browser bar -->
+          <div class="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-full bg-red-400"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-gold-400"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+              <span id="sliderPath" class="ml-2 text-[11px] text-slate-400">/showcase</span>
+            </div>
+            <span id="sliderCounter" class="text-[11px] font-medium text-slate-400">1 / 6</span>
+          </div>
+
+          <!-- Slides -->
+          <div class="overflow-hidden" id="sliderViewport">
+            <div class="slider-track" id="sliderTrack">
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-50" onclick="openLightbox('images/showcase-home.png', 'Витрина ломбарда — главная страница')">
+                  <img src="images/showcase-home.png" alt="Витрина Lombard Showcase" class="w-full object-contain" />
+                </button>
+              </div>
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-50" onclick="openLightbox('images/admin-dashboard.png', 'Панель управления — статистика товаров')">
+                  <img src="images/admin-dashboard.png" alt="Панель управления" class="w-full object-contain" />
+                </button>
+              </div>
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-50" onclick="openLightbox('images/product-detail.png', 'Карточка товара на витрине')">
+                  <img src="images/product-detail.png" alt="Карточка товара" class="w-full object-contain" />
+                </button>
+              </div>
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-50" onclick="openLightbox('images/olx-integration.png', 'Автопубликация на OLX.kz')">
+                  <img src="images/olx-integration.png" alt="Интеграция OLX.kz" class="w-full object-contain" />
+                </button>
+              </div>
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-50" onclick="openLightbox('images/telegram-hub.png', 'Публикация в Telegram-каналы')">
+                  <img src="images/telegram-hub.png" alt="Telegram-интеграция" class="w-full object-contain" />
+                </button>
+              </div>
+              <div class="slider-slide">
+                <button type="button" class="block w-full cursor-zoom-in bg-slate-900" onclick="openLightbox('images/telegram-post.png', 'Пост товара в Telegram-канале')">
+                  <img src="images/telegram-post.png" alt="Пост в Telegram-канале" class="mx-auto w-full max-w-md object-contain" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caption -->
+          <div class="border-t border-slate-100 p-6 sm:p-8">
+            <h3 id="sliderTitle" class="text-xl font-bold text-slate-900">Витрина ломбарда</h3>
+            <p id="sliderDesc" class="mt-2 text-slate-500 leading-relaxed">Главная страница с поиском, категориями и каталогом товаров — техника, часы, золото и аксессуары.</p>
+          </div>
+        </div>
+
+        <!-- Dots -->
+        <div id="sliderDots" class="mt-6 flex items-center justify-center gap-2"></div>
+
+        <p class="mt-4 text-center text-xs text-slate-400">← → стрелки на клавиатуре · свайп на телефоне · клик по фото — увеличить</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATIONS -->
+  <section id="integrations" class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Интеграции из коробки</h2>
+        <p class="mt-4 text-lg text-slate-500">Один клик — и товар на всех площадках</p>
+      </div>
+
+      <div class="mt-14 grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <div class="mb-4 flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-lg font-bold text-white">O</span>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">OLX.kz — автопубликация</h3>
+              <p class="text-sm text-slate-500">Один клик — объявление на маркетплейсе</p>
+            </div>
+          </div>
+          <ul class="space-y-3 text-slate-600">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Фото, описание и цена уходят через OLX API</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Автоснятие при продаже или скрытии товара</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Синхронизация цены при изменении в админке</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Ссылка на объявление сохраняется в карточке</li>
+          </ul>
+        </div>
+        <div class="mockup-shadow overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <img src="images/olx-integration.png" alt="Интеграция OLX.kz" class="w-full" />
+        </div>
+      </div>
+
+      <div class="mt-16 grid items-center gap-10 lg:grid-cols-2">
+        <div class="mockup-shadow overflow-hidden rounded-2xl border border-slate-200 bg-white lg:order-1">
+          <img src="images/telegram-hub.png" alt="Telegram-интеграция" class="w-full" />
+        </div>
+        <div class="lg:order-2">
+          <div class="mb-4 flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-lg text-white">✈️</span>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">Telegram — автопостинг</h3>
+              <p class="text-sm text-slate-500">@autoPostingShowcasebot</p>
+            </div>
+          </div>
+          <ul class="space-y-3 text-slate-600">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Карточка с фото, ценой и ссылкой на витрину</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Несколько каналов и групп одновременно</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Статусы: в каналах, ошибки, не опубликовано</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-500">✓</span> Синхронизация и снятие при изменении статуса</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="bg-slate-900 py-20 text-white">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold sm:text-4xl">Как это работает</h2>
+        <p class="mt-4 text-lg text-slate-400">4 шага от товара на складе до продажи онлайн</p>
+      </div>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-slate-900">1</span>
+          <h3 class="mt-4 font-bold">Добавьте товар</h3>
+          <p class="mt-2 text-sm text-slate-400">Фото, описание, цена, категория, состояние — в админке за пару минут.</p>
+        </div>
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-slate-900">2</span>
+          <h3 class="mt-4 font-bold">Появится на витрине</h3>
+          <p class="mt-2 text-sm text-slate-400">Покупатель видит товар в каталоге с поиском и фильтрами.</p>
+        </div>
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-slate-900">3</span>
+          <h3 class="mt-4 font-bold">Автопубликация</h3>
+          <p class="mt-2 text-sm text-slate-400">Нажмите «На OLX» или синхронизируйте с Telegram — всё уходит автоматически.</p>
+        </div>
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-sm font-bold text-slate-900">4</span>
+          <h3 class="mt-4 font-bold">Продали — сняли</h3>
+          <p class="mt-2 text-sm text-slate-400">Статус «Продан» — объявление снимается с OLX и обновляется везде.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA + CONTACT -->
+  <section id="contact" class="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-gold-50 py-20">
+    <div class="pointer-events-none absolute -right-20 top-0 h-80 w-80 rounded-full bg-brand-200/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-gold-200/30 blur-3xl"></div>
+
+    <div class="relative mx-auto max-w-6xl px-4">
+      <div class="grid items-start gap-12 lg:grid-cols-2">
+        <div>
+          <h2 class="text-3xl font-bold text-slate-900 sm:text-4xl">Готовы подключить Lombard Showcase?</h2>
+          <p class="mt-4 text-lg text-slate-600">Оставьте заявку — свяжемся с вами в WhatsApp и на почту. Покажем демо и обсудим внедрение для вашей сети ломбардов.</p>
+
+          <div class="mt-8 space-y-4">
+            <a href="https://wa.me/77086757610" target="_blank" rel="noopener" class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-300 hover:shadow-md">
+              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white text-xl">💬</span>
+              <div>
+                <p class="font-semibold text-slate-900">WhatsApp</p>
+                <p class="text-brand-600">+7 708 675 7610</p>
+              </div>
+            </a>
+            <a href="mailto:zhadi000s@gmail.com" class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md">
+              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 text-white text-xl">✉️</span>
+              <div>
+                <p class="font-semibold text-slate-900">Email</p>
+                <p class="text-brand-600">zhadi000s@gmail.com</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-7 shadow-xl shadow-slate-200/50 sm:p-8">
+          <h3 class="text-xl font-bold text-slate-900">Форма обратной связи</h3>
+          <p class="mt-1 text-sm text-slate-500">Заполните поля — сообщение придёт на WhatsApp и email</p>
+
+          <form id="contactForm" class="mt-6 space-y-4" novalidate>
+            <div>
+              <label for="name" class="mb-1.5 block text-sm font-medium text-slate-700">Имя *</label>
+              <input type="text" id="name" name="name" required placeholder="Ваше имя"
+                class="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+            </div>
+            <div>
+              <label for="phone" class="mb-1.5 block text-sm font-medium text-slate-700">Телефон *</label>
+              <input type="tel" id="phone" name="phone" required placeholder="+7 7XX XXX XX XX"
+                class="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+            </div>
+            <div>
+              <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700">Email</label>
+              <input type="email" id="email" name="email" placeholder="your@email.com"
+                class="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+            </div>
+            <div>
+              <label for="message" class="mb-1.5 block text-sm font-medium text-slate-700">Сообщение *</label>
+              <textarea id="message" name="message" required rows="4" placeholder="Расскажите о вашем ломбарде, количестве филиалов…"
+                class="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"></textarea>
+            </div>
+
+            <div id="formStatus" class="hidden rounded-xl px-4 py-3 text-sm"></div>
+
+            <button type="submit" id="submitBtn"
+              class="flex w-full items-center justify-center gap-2 rounded-xl bg-gold-500 px-6 py-3.5 font-semibold text-slate-900 shadow-lg shadow-gold-500/25 transition hover:bg-gold-400 disabled:cursor-not-allowed disabled:opacity-60">
+              <span id="btnText">Отправить заявку</span>
+              <svg id="btnSpinner" class="hidden h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 bg-slate-900 py-10 text-slate-400">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white text-sm">🏠</span>
+        <span class="font-semibold text-white">Lombard Showcase</span>
+      </div>
+      <p class="text-sm">© 2026 Lombard Showcase. Платформа для ломбардов Казахстана.</p>
+      <div class="flex gap-4 text-sm">
+        <a href="https://wa.me/77086757610" class="transition hover:text-white">WhatsApp</a>
+        <a href="mailto:zhadi000s@gmail.com" class="transition hover:text-white">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm" onclick="closeLightbox(event)">
+    <button type="button" onclick="closeLightbox()" class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20" aria-label="Закрыть">×</button>
+    <div class="max-h-[90vh] max-w-5xl overflow-auto rounded-2xl" onclick="event.stopPropagation()">
+      <img id="lightboxImg" src="" alt="" class="w-full rounded-2xl shadow-2xl" />
+      <p id="lightboxCaption" class="mt-3 text-center text-sm text-slate-300"></p>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp -->
+  <a href="https://wa.me/77086757610" target="_blank" rel="noopener"
+    class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-2xl text-white shadow-lg shadow-emerald-500/30 transition hover:scale-105 hover:bg-emerald-400"
+    aria-label="Написать в WhatsApp">💬</a>
+
+  <script>
+    function openLightbox(src, caption) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightboxImg').alt = caption;
+      document.getElementById('lightboxCaption').textContent = caption;
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(e) {
+      if (e && e.target !== e.currentTarget) return;
+      const lb = document.getElementById('lightbox');
+      lb.classList.add('hidden');
+      lb.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { closeLightbox(); return; }
+      const lb = document.getElementById('lightbox');
+      if (!lb.classList.contains('hidden')) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === 'ArrowLeft') sliderPrev();
+      if (e.key === 'ArrowRight') sliderNext();
+    });
+
+    /* ── Screenshot Slider ── */
+    const SLIDER_DATA = [
+      { path: '/showcase', title: 'Витрина ломбарда', desc: 'Главная страница с поиском, категориями и каталогом товаров — техника, часы, золото и аксессуары.' },
+      { path: '/admin', title: 'Панель управления', desc: 'Статистика по филиалу: всего товаров, на витрине, в наличии, стоимость склада. Разбивка по статусам и категориям.' },
+      { path: '/showcase/product', title: 'Карточка товара', desc: 'Фото, цена в ₸, состояние, описание и кнопка «Связаться с филиалом» — всё на одной странице.' },
+      { path: '/admin/olx', title: 'Интеграция OLX.kz', desc: 'Автопубликация, синхронизация цен, статусы объявлений и настройки города — всё в одном разделе.' },
+      { path: '/admin/telegram', title: 'Telegram-интеграция', desc: 'Подключение бота @autoPostingShowcasebot, управление каналами и синхронизация товаров в Telegram.' },
+      { path: 'Telegram-канал', title: 'Автопостинг в канал', desc: 'Бот публикует готовую карточку: фото, название, категория, состояние, цена в ₸, локация и ссылка на витрину.' },
+    ];
+
+    let sliderIndex = 0;
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderDots = document.getElementById('sliderDots');
+
+    function renderSliderDots() {
+      sliderDots.innerHTML = SLIDER_DATA.map((_, i) =>
+        `<button type="button" onclick="goToSlide(${i})" aria-label="Слайд ${i + 1}"
+          class="slider-dot h-2.5 rounded-full ${i === sliderIndex ? 'active w-8 bg-brand-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'}"></button>`
+      ).join('');
+    }
+
+    function goToSlide(index) {
+      sliderIndex = ((index % SLIDER_DATA.length) + SLIDER_DATA.length) % SLIDER_DATA.length;
+      sliderTrack.style.transform = `translateX(-${sliderIndex * 100}%)`;
+      const d = SLIDER_DATA[sliderIndex];
+      document.getElementById('sliderPath').textContent = d.path;
+      document.getElementById('sliderTitle').textContent = d.title;
+      document.getElementById('sliderDesc').textContent = d.desc;
+      document.getElementById('sliderCounter').textContent = `${sliderIndex + 1} / ${SLIDER_DATA.length}`;
+      renderSliderDots();
+    }
+
+    function sliderNext() { goToSlide(sliderIndex + 1); }
+    function sliderPrev() { goToSlide(sliderIndex - 1); }
+
+    renderSliderDots();
+
+    // Touch swipe
+    let touchStartX = 0;
+    const viewport = document.getElementById('sliderViewport');
+    viewport.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) diff > 0 ? sliderNext() : sliderPrev();
+    }, { passive: true });
+
+    const WHATSAPP_PHONE = '77086757610';
+    const CONTACT_EMAIL = 'zhadi000s@gmail.com';
+
+    const form = document.getElementById('contactForm');
+    const statusEl = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    function showStatus(msg, type) {
+      statusEl.textContent = msg;
+      statusEl.className = 'rounded-xl px-4 py-3 text-sm ' + (
+        type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+        type === 'error'   ? 'bg-red-50 text-red-800 border border-red-200' :
+                             'bg-brand-50 text-brand-800 border border-brand-200'
+      );
+      statusEl.classList.remove('hidden');
+    }
+
+    function buildMessage(data) {
+      return [
+        '🆕 Новая заявка с лендинга Lombard Showcase',
+        '',
+        '👤 Имя: ' + data.name,
+        '📞 Телефон: ' + data.phone,
+        data.email ? '📧 Email: ' + data.email : '',
+        '',
+        '💬 Сообщение:',
+        data.message,
+      ].filter(Boolean).join('\n');
+    }
+
+    async function sendViaApi(data) {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return res.json().catch(() => ({ fallback: true }));
+    }
+
+    async function sendViaFormSubmit(data, text) {
+      const body = new FormData();
+      body.append('name', data.name);
+      body.append('phone', data.phone);
+      body.append('email', data.email || 'no-reply@lombard-showcase.kz');
+      body.append('message', text);
+      body.append('_subject', 'Заявка с лендинга — ' + data.name);
+      body.append('_captcha', 'false');
+      body.append('_template', 'table');
+
+      const res = await fetch('https://formsubmit.co/ajax/' + CONTACT_EMAIL, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body,
+      });
+      return res.ok;
+    }
+
+    function openWhatsApp(text) {
+      window.open('https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        email: form.email.value.trim(),
+        message: form.message.value.trim(),
+      };
+
+      if (!data.name || !data.phone || !data.message) {
+        showStatus('Пожалуйста, заполните обязательные поля.', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      btnText.textContent = 'Отправка…';
+      btnSpinner.classList.remove('hidden');
+      statusEl.classList.add('hidden');
+
+      const text = buildMessage(data);
+      let emailSent = false;
+      let apiOk = false;
+
+      try {
+        const apiResult = await sendViaApi(data);
+        if (apiResult.success) {
+          apiOk = true;
+          emailSent = apiResult.email;
+        }
+      } catch (_) {}
+
+      if (!apiOk) {
+        try {
+          emailSent = await sendViaFormSubmit(data, text);
+        } catch (_) {}
+        openWhatsApp(text);
+      }
+
+      submitBtn.disabled = false;
+      btnText.textContent = 'Отправить заявку';
+      btnSpinner.classList.add('hidden');
+
+      if (apiOk || emailSent) {
+        showStatus('✅ Заявка отправлена! Мы свяжемся с вами в ближайшее время.', 'success');
+        form.reset();
+      } else {
+        showStatus('Сообщение открыто в WhatsApp. Если окно не открылось — напишите нам напрямую.', 'info');
+        openWhatsApp(text);
+      }
+    });
+  </script>
+</body>
+</html>

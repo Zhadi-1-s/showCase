@@ -1,0 +1,25 @@
+<footer class="mt-auto border-t border-slate-200 bg-white">
+  <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-2 text-slate-800">
+      <app-icon name="store" class="h-6 w-6 text-brand-600" />
+      <span class="font-semibold">Lombard Showcase</span>
+    </div>
+    <nav class="flex flex-wrap gap-6 text-sm text-slate-600">
+      <a routerLink="/showcase" class="inline-flex items-center gap-1.5 hover:text-brand-600">
+        <app-icon name="home" class="h-4 w-4" />
+        Главная
+      </a>
+      <a routerLink="/showcase/catalog" class="inline-flex items-center gap-1.5 hover:text-brand-600">
+        <app-icon name="grid" class="h-4 w-4" />
+        Каталог
+      </a>
+      @if (auth.currentUser$ | async) {
+        <a routerLink="/admin" class="inline-flex items-center gap-1.5 hover:text-brand-600">
+          <app-icon name="shield" class="h-4 w-4" />
+          Админка
+        </a>
+      }
+    </nav>
+    <p class="text-xs text-slate-400">© {{ year }} Демо-платформа ломбарда</p>
+  </div>
+</footer>

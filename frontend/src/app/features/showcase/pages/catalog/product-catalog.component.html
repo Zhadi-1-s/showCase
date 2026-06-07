@@ -1,0 +1,106 @@
+<div class="showcase-page">
+  <section class="showcase-hero-band">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:py-14">
+      <nav class="mb-4 flex items-center gap-2 text-sm text-slate-400">
+        <a routerLink="/showcase" class="hover:text-gold-300">Главная</a>
+        <app-icon name="chevron-right" class="h-4 w-4" />
+        <span class="text-gold-200">Каталог</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Каталог товаров</h1>
+      <p class="mt-2 max-w-xl text-slate-300">
+        Проверенная техника и украшения с прозрачной ценой — выберите категорию или воспользуйтесь фильтрами
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 py-8">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <p class="text-sm text-slate-600">
+        Найдено: <span class="font-semibold text-slate-900">{{ total() }}</span> товаров
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" class="btn-secondary lg:hidden" (click)="filtersOpen.set(true)">
+          <app-icon name="filter" class="h-4 w-4" />
+          Фильтры
+        </button>
+        <label class="flex items-center gap-2 text-sm text-slate-600">
+          Сортировка
+          <select
+            class="input-field w-auto py-1.5"
+            [value]="sort()"
+            (change)="onSortChange($any($event.target).value)"
+          >
+            <option value="new">Сначала новые</option>
+            <option value="price-asc">Цена ↑</option>
+            <option value="price-desc">Цена ↓</option>
+            <option value="name">По названию</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex gap-8">
+      <aside class="hidden w-72 shrink-0 lg:block">
+        <div class="catalog-filter-panel sticky top-24">
+          <app-filter-panel
+            [branches]="branches()"
+            [initial]="initialFilters()"
+            (apply)="onFiltersApply($event)"
+            (reset)="onFiltersReset()"
+          />
+        </div>
+      </aside>
+
+      @if (filtersOpen()) {
+        <div class="fixed inset-0 z-50 lg:hidden">
+          <div class="absolute inset-0 bg-slate-900/50" (click)="filtersOpen.set(false)"></div>
+          <aside class="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl">
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-lg font-semibold">Фильтры</h2>
+              <button type="button" class="rounded-lg p-2 hover:bg-slate-100" (click)="filtersOpen.set(false)">
+                <app-icon name="x" class="h-5 w-5" />
+              </button>
+            </div>
+            <app-filter-panel
+              [branches]="branches()"
+              [initial]="initialFilters()"
+              (apply)="onFiltersApply($event)"
+              (reset)="onFiltersReset()"
+            />
+          </aside>
+        </div>
+      }
+
+      <div class="min-w-0 flex-1">
+        @if (loading()) {
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+              <div class="animate-pulse rounded-2xl bg-slate-200 aspect-[3/4]"></div>
+            }
+          </div>
+        } @else if (products().length === 0) {
+          <div class="rounded-3xl border border-dashed border-slate-300 bg-white py-20 text-center">
+            <app-icon name="package" class="mx-auto h-14 w-14 text-slate-300" />
+            <p class="mt-4 text-lg font-medium text-slate-700">Товары не найдены</p>
+            <p class="mt-1 text-sm text-slate-500">Попробуйте изменить фильтры</p>
+            <button type="button" class="btn-primary mt-6" (click)="onFiltersReset()">Сбросить фильтры</button>
+          </div>
+        } @else {
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            @for (p of products(); track p._id) {
+              <app-product-card [product]="p" />
+            }
+          </div>
+
+          @if (totalPages() > 1) {
+            <div class="mt-10 flex justify-center gap-2">
+              <button type="button" class="btn-secondary" [disabled]="page() <= 1" (click)="goPage(page() - 1)">Назад</button>
+              <span class="flex items-center px-4 text-sm text-slate-600">{{ page() }} / {{ totalPages() }}</span>
+              <button type="button" class="btn-secondary" [disabled]="page() >= totalPages()" (click)="goPage(page() + 1)">Вперёд</button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

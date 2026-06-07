@@ -1,0 +1,65 @@
+<div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">
+  <div class="auth-card">
+    <div class="mb-6 flex items-center gap-3">
+      <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+        <app-icon name="login" class="h-6 w-6" />
+      </span>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">Вход в админку</h1>
+        <p class="text-sm text-slate-500">Панель сотрудника ломбарда</p>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    <form class="space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="input-field"
+          placeholder="employee@lombard.kz"
+          autocomplete="email"
+        />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <p class="mt-1 text-xs text-red-600">Введите корректный email</p>
+        }
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700" for="password">Пароль</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="input-field"
+          autocomplete="current-password"
+        />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <p class="mt-1 text-xs text-red-600">Введите пароль</p>
+        }
+      </div>
+
+      <button type="submit" class="btn-primary w-full" [disabled]="loading()">
+        @if (loading()) {
+          <span class="inline-flex items-center gap-2">
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            Вход…
+          </span>
+        } @else {
+          Войти
+        }
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-xs text-slate-500">
+      Доступ только для сотрудников ломбарда. Учётную запись выдаёт администратор.
+    </p>
+  </div>
+</div>

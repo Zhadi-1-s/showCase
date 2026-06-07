@@ -1,0 +1,89 @@
+<div class="px-4 py-6 lg:px-0 lg:py-0">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Филиалы</h1>
+      <p class="mt-1 text-sm text-slate-500">Управление сетью ломбарда</p>
+    </div>
+    <a routerLink="/admin/branches/new" class="btn-primary">
+      <app-icon name="plus" class="h-4 w-4" />
+      Добавить филиал
+    </a>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ errorMessage() }}
+    </p>
+  }
+
+  @if (loading()) {
+    <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-8 text-slate-500">
+      <span class="h-5 w-5 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"></span>
+      Загрузка…
+    </div>
+  } @else if (branches().length === 0) {
+    <p class="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">
+      Филиалов пока нет — добавьте первый
+    </p>
+  } @else {
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-4 py-3 font-semibold lg:px-6">Название</th>
+              <th class="px-4 py-3 font-semibold">Адрес</th>
+              <th class="px-4 py-3 font-semibold">Телефон</th>
+              <th class="px-4 py-3 font-semibold">Товаров</th>
+              <th class="px-4 py-3 font-semibold">Статус</th>
+              <th class="px-4 py-3 font-semibold lg:px-6">Действия</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (b of branches(); track b._id) {
+              <tr class="hover:bg-slate-50/80" [class.opacity-60]="!b.isActive">
+                <td class="px-4 py-3 font-medium text-slate-900 lg:px-6">{{ b.name }}</td>
+                <td class="max-w-[200px] truncate px-4 py-3 text-slate-600" [title]="b.address">{{ b.address }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ b.phone }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ b.productCount ?? 0 }}</td>
+                <td class="px-4 py-3">
+                  @if (b.isActive) {
+                    <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Активен</span>
+                  } @else {
+                    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">Отключён</span>
+                  }
+                </td>
+                <td class="px-4 py-3 lg:px-6">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <a
+                      [routerLink]="['/admin/branches', b._id, 'edit']"
+                      class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      Изменить
+                    </a>
+                    <button
+                      type="button"
+                      class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                      [disabled]="isBusy(b._id)"
+                      (click)="toggleActive(b)"
+                    >
+                      {{ b.isActive ? 'Отключить' : 'Включить' }}
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded-lg border border-red-200 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                      [disabled]="isBusy(b._id) || (b.productCount ?? 0) > 0"
+                      (click)="deleteBranch(b)"
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

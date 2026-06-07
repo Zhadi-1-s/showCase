@@ -1,0 +1,197 @@
+<section class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-brand-950 text-white">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gold-500/20 via-transparent to-transparent"></div>
+  <div class="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-brand-600/20 blur-3xl"></div>
+
+  <div class="relative mx-auto max-w-6xl px-4 py-20 sm:py-28">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-gold-300">
+        <app-icon name="sparkles" class="h-3.5 w-3.5" />
+        Lombard Showcase
+      </p>
+      <h1 class="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+        Качественные товары<br />
+        <span class="bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">с честной ценой</span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-xl text-lg text-slate-300">
+        Витрина ломбарда: техника, часы, золото и аксессуары — с фото, описанием и контактами филиала
+      </p>
+
+      <form class="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row" (ngSubmit)="searchCatalog(); $event.preventDefault()">
+        <div #searchBox class="relative flex-1">
+          <app-icon name="search" class="pointer-events-none absolute left-2 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            class="w-full rounded-xl border-0 bg-white py-3.5 pl-14 pr-4 text-slate-900 shadow-xl placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-gold-400"
+            placeholder="Поиск по каталогу…"
+            autocomplete="off"
+            role="combobox"
+            [attr.aria-expanded]="searchDropdownOpen()"
+            aria-autocomplete="list"
+            [value]="heroSearch()"
+            (input)="onSearchInput($any($event.target).value)"
+            (focus)="onSearchFocus()"
+          />
+          @if (searchDropdownOpen() && heroSearch().trim().length >= 2) {
+            <div
+              class="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-2xl ring-1 ring-slate-900/5"
+              role="listbox"
+            >
+              @if (searchLoading()) {
+                <p class="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">
+                  <span class="h-4 w-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"></span>
+                  Поиск…
+                </p>
+              } @else if (searchSuggestions().length === 0) {
+                <p class="px-4 py-3 text-sm text-slate-500">Ничего не найдено</p>
+                <button
+                  type="button"
+                  class="w-full border-t border-slate-100 px-4 py-2.5 text-left text-sm font-medium text-brand-600 hover:bg-slate-50"
+                  (click)="searchCatalog()"
+                >
+                  Искать в каталоге «{{ heroSearch() }}»
+                </button>
+              } @else {
+                <ul class="max-h-72 overflow-y-auto py-1">
+                  @for (p of searchSuggestions(); track p._id) {
+                    <li>
+                      <a
+                        [routerLink]="['/showcase/product', p._id]"
+                        class="flex items-center gap-3 px-4 py-2.5 transition hover:bg-slate-50"
+                        (click)="closeSearchDropdown()"
+                      >
+                        @if (productThumb(p); as thumb) {
+                          <img [src]="thumb" alt="" class="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-slate-200" />
+                        } @else {
+                          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+                            <app-icon name="package" class="h-5 w-5" />
+                          </span>
+                        }
+                        <span class="min-w-0 flex-1">
+                          <span class="block truncate font-medium text-slate-900">{{ p.name }}</span>
+                          <span class="block truncate text-xs capitalize text-slate-500">{{ p.category }}</span>
+                        </span>
+                        <span class="shrink-0 text-sm font-semibold text-gold-700">{{ p.price | appCurrency }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+                <button
+                  type="button"
+                  class="w-full border-t border-slate-100 px-4 py-2.5 text-left text-sm font-medium text-brand-600 hover:bg-brand-50"
+                  (click)="searchCatalog()"
+                >
+                  Все результаты в каталоге →
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <button type="submit" class="btn-gold shrink-0 px-8">Найти</button>
+      </form>
+
+      @if (auth.currentUser$ | async; as user) {
+        <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <p class="text-slate-300">
+            Здравствуйте, <span class="font-semibold text-white">{{ user.name || user.email }}</span>
+          </p>
+          <a routerLink="/admin" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium backdrop-blur transition hover:bg-white/20">
+            <app-icon name="shield" class="h-4 w-4" />
+            Панель управления
+          </a>
+        </div>
+      } @else {
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a routerLink="/showcase/catalog" class="btn-gold">Смотреть каталог</a>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="border-b border-slate-200 bg-white py-6">
+  <div class="mx-auto flex max-w-6xl flex-wrap justify-center gap-8 px-4 text-center text-sm text-slate-600">
+    <div class="flex items-center gap-2">
+      <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold-100 text-gold-600">
+        <app-icon name="shield" class="h-4 w-4" />
+      </span>
+      Проверенное состояние
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+        <app-icon name="store" class="h-4 w-4" />
+      </span>
+      Сеть филиалов
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+        <app-icon name="sparkles" class="h-4 w-4" />
+      </span>
+      Актуальные цены
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-6xl px-4 py-16">
+  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-900">Категории</h2>
+      <p class="mt-1 text-slate-500">Выберите раздел каталога</p>
+    </div>
+    <a routerLink="/showcase/catalog" class="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline">
+      Весь каталог
+      <app-icon name="chevron-right" class="h-4 w-4" />
+    </a>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    @for (cat of categories; track cat.label) {
+      <a
+        [routerLink]="categoryLink()"
+        [queryParams]="categoryQuery(cat.label)"
+        class="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-gold-300 hover:shadow-lg"
+      >
+        <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 text-gold-600 transition group-hover:from-gold-100 group-hover:to-gold-50">
+          <app-icon [name]="cat.icon" class="h-7 w-7" />
+        </span>
+        <div>
+          <h3 class="font-semibold capitalize text-slate-900 group-hover:text-brand-700">{{ cat.label }}</h3>
+          <p class="text-xs text-slate-400">Смотреть товары →</p>
+        </div>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="bg-slate-100/80 py-16">
+  <div class="mx-auto max-w-6xl px-4">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900">Новинки</h2>
+        <p class="mt-1 text-slate-500">Недавно добавленные в витрину</p>
+      </div>
+      <a routerLink="/showcase/catalog" class="btn-secondary text-sm">Все товары</a>
+    </div>
+
+    @if (loadingRecent()) {
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="aspect-[3/4] animate-pulse rounded-2xl bg-slate-200"></div>
+        }
+      </div>
+    } @else if (recentProducts().length === 0) {
+      <p class="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">
+        @if (auth.currentUser$ | async) {
+          Товары скоро появятся — добавьте их в админке
+        } @else {
+          Сейчас в витрине нет активных товаров. Загляните позже или перейдите в каталог.
+        }
+      </p>
+    } @else {
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (p of recentProducts(); track p._id) {
+          <app-product-card [product]="p" />
+        }
+      </div>
+    }
+  </div>
+</section>

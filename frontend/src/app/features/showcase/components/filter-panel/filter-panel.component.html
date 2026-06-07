@@ -1,0 +1,75 @@
+<form [formGroup]="form" class="space-y-6" (ngSubmit)="submit()">
+  <div>
+    <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">Поиск</label>
+    <div class="relative">
+      <app-icon name="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <input type="search" formControlName="search" class="input-field pl-10" placeholder="Название, бренд…" />
+    </div>
+  </div>
+
+  <div>
+    <button type="button" class="mb-2 flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-500" (click)="expandedCategories.set(!expandedCategories())">
+      Категория
+      <span>{{ expandedCategories() ? '−' : '+' }}</span>
+    </button>
+    @if (expandedCategories()) {
+      <div class="flex flex-wrap gap-2">
+        @for (cat of categories; track cat) {
+          <button
+            type="button"
+            class="rounded-full border px-3 py-1 text-xs font-medium transition"
+            [class.border-gold-400]="isCategoryActive(cat)"
+            [class.bg-gold-50]="isCategoryActive(cat)"
+            [class.text-gold-800]="isCategoryActive(cat)"
+            [class.border-slate-200]="!isCategoryActive(cat)"
+            [class.text-slate-600]="!isCategoryActive(cat)"
+            (click)="toggleCategory(cat)"
+          >
+            {{ cat }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <div>
+    <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">Состояние</label>
+    <select formControlName="condition" class="input-field">
+      <option value="">Любое</option>
+      @for (c of conditions; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+  </div>
+
+  <div>
+    <button type="button" class="mb-2 flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-500" (click)="expandedPrice.set(!expandedPrice())">
+      Цена (₸)
+      <span>{{ expandedPrice() ? '−' : '+' }}</span>
+    </button>
+    @if (expandedPrice()) {
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" formControlName="priceMin" class="input-field" placeholder="От" min="0" />
+        <input type="number" formControlName="priceMax" class="input-field" placeholder="До" min="0" />
+      </div>
+    }
+  </div>
+
+  <div>
+    <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">Филиал</label>
+    <select formControlName="branch" class="input-field">
+      <option value="">Все филиалы</option>
+      @for (b of branches; track b._id) {
+        <option [value]="b._id">{{ b.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="flex flex-col gap-2 pt-2">
+    <button type="submit" class="btn-primary w-full">
+      <app-icon name="filter" class="h-4 w-4" />
+      Применить
+    </button>
+    <button type="button" class="btn-secondary w-full" (click)="clear()">Сбросить</button>
+  </div>
+</form>

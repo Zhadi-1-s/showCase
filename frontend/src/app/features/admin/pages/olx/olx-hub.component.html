@@ -1,0 +1,257 @@
+<div class="px-4 py-6 lg:px-0 lg:py-0">
+  <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wide text-violet-600">Интеграция</p>
+      <h1 class="mt-1 text-2xl font-bold text-slate-900">OLX</h1>
+      <p class="mt-1 text-sm text-slate-500">Автопубликация товаров на OLX.kz</p>
+    </div>
+    <button type="button" class="btn-secondary text-sm" (click)="reload()" [disabled]="loading()">
+      <app-icon name="refresh" class="h-4 w-4" />
+      Обновить
+    </button>
+  </div>
+
+  <div class="mb-6 rounded-2xl border border-violet-200 bg-gradient-to-r from-violet-50 to-white p-4 sm:p-5">
+    <div class="flex flex-wrap items-start gap-3">
+      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
+        <app-icon name="external-link" class="h-5 w-5" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold text-violet-950">Макет — OLX API в процессе подключения</p>
+        <p class="mt-1 text-sm text-violet-900/80">
+          Кнопки имитируют публикацию локально. После получения API ключей подключим реальные
+          запросы: создание объявления, обновление цены и снятие с площадки.
+        </p>
+      </div>
+      <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-900">
+        <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+        Ожидание API
+      </span>
+    </div>
+  </div>
+
+  @if (stats(); as s) {
+    <div class="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <button
+        type="button"
+        class="rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-violet-200"
+        [class.ring-2]="filter() === 'published'"
+        [class.ring-violet-400]="filter() === 'published'"
+        (click)="setFilter('published')"
+      >
+        <p class="text-xs text-slate-500">На OLX</p>
+        <p class="text-2xl font-bold text-emerald-700">{{ s.published }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('pending')">
+        <p class="text-xs text-slate-500">В очереди</p>
+        <p class="text-2xl font-bold text-amber-700">{{ s.pending }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('error')">
+        <p class="text-xs text-slate-500">Ошибки</p>
+        <p class="text-2xl font-bold text-red-600">{{ s.errors }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('not_published')">
+        <p class="text-xs text-slate-500">Не опубликовано</p>
+        <p class="text-2xl font-bold text-slate-700">{{ s.notPublished }}</p>
+      </button>
+      <button type="button" class="rounded-xl border border-slate-200 bg-white p-4 text-left" (click)="setFilter('all')">
+        <p class="text-xs text-slate-500">Всего товаров</p>
+        <p class="text-2xl font-bold text-violet-700">{{ rows().length }}</p>
+      </button>
+    </div>
+  }
+
+  <div class="mb-8 grid gap-6 lg:grid-cols-3">
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+      <h2 class="text-sm font-semibold text-slate-900">Настройки интеграции (макет)</h2>
+      <p class="mt-1 text-xs text-slate-500">Поля станут активны после подключения OLX API</p>
+      <div class="mt-4 space-y-4">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-600">Client ID / API Key</label>
+          <input type="text" class="input-field bg-slate-50" placeholder="Будет указан после одобрения OLX" disabled />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-600">Client Secret</label>
+          <input type="password" class="input-field bg-slate-50" value="••••••••••••" disabled />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-600">Город по умолчанию</label>
+          <input type="text" class="input-field bg-slate-50" [value]="settings().defaultCity" disabled />
+        </div>
+        <label class="flex items-center gap-2 text-sm text-slate-500">
+          <input type="checkbox" disabled [checked]="settings().autoPublishNew" class="rounded border-slate-300" />
+          Автопубликация новых товаров «В наличии»
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-500">
+          <input type="checkbox" disabled [checked]="settings().syncPrice" class="rounded border-slate-300" />
+          Синхронизировать цену при изменении в админке
+        </label>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <h2 class="text-sm font-semibold text-slate-900">Как будет работать</h2>
+      <ol class="mt-4 space-y-3 text-sm text-slate-600">
+        <li class="flex gap-2">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">1</span>
+          Товар «В наличии» → кнопка «На OLX»
+        </li>
+        <li class="flex gap-2">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">2</span>
+          Фото, описание и цена уходят в OLX API
+        </li>
+        <li class="flex gap-2">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">3</span>
+          Ссылка на объявление сохраняется в карточке
+        </li>
+        <li class="flex gap-2">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">4</span>
+          Продан / скрыт → автоснятие с OLX
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <section>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-lg font-semibold text-slate-900">Товары и статус на OLX</h2>
+      @if (filter() !== 'all') {
+        <button type="button" class="text-sm text-violet-600 hover:underline" (click)="setFilter('all')">
+          Сбросить фильтр
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="flex justify-center py-16">
+        <span class="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent"></span>
+      </div>
+    } @else if (filteredRows().length === 0) {
+      <p class="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">
+        Нет товаров по выбранному фильтру
+      </p>
+    } @else {
+      <div class="hidden overflow-hidden rounded-2xl border border-slate-200 md:block">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+            <tr>
+              <th class="px-4 py-3">Товар</th>
+              <th class="px-4 py-3">Цена</th>
+              <th class="px-4 py-3">Склад</th>
+              <th class="px-4 py-3">OLX</th>
+              <th class="px-4 py-3">Синхр.</th>
+              <th class="px-4 py-3 text-right">Действия</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+            @for (row of filteredRows(); track row.productId) {
+              <tr class="hover:bg-slate-50/80">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-3">
+                    @if (row.photo) {
+                      <img [src]="row.photo" alt="" class="h-11 w-11 rounded-lg object-cover ring-1 ring-slate-200" />
+                    } @else {
+                      <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+                        <app-icon name="package" class="h-5 w-5" />
+                      </span>
+                    }
+                    <div>
+                      <p class="font-medium text-slate-900">{{ row.name }}</p>
+                      <p class="text-xs capitalize text-slate-500">{{ row.category }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-medium">{{ row.price | appCurrency }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ row.productStatus }}</td>
+                <td class="px-4 py-3">
+                  <span [class]="statusBadgeClass(row.olx.status)">
+                    {{ statusLabels[row.olx.status] }}
+                  </span>
+                  @if (row.olx.olxUrl && row.olx.status === 'published') {
+                    <a
+                      [href]="row.olx.olxUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="mt-1 block text-xs text-violet-600 hover:underline"
+                    >
+                      Открыть объявление ↗
+                    </a>
+                  }
+                  @if (row.olx.errorMessage) {
+                    <p class="mt-1 max-w-xs text-xs text-red-600">{{ row.olx.errorMessage }}</p>
+                  }
+                </td>
+                <td class="px-4 py-3 text-xs text-slate-500">{{ formatSyncDate(row.olx.lastSyncAt) }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap justify-end gap-2">
+                    @if (canPublish(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg bg-violet-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId)"
+                        (click)="publish(row)"
+                      >
+                        На OLX
+                      </button>
+                    }
+                    @if (canSync(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId)"
+                        (click)="sync(row)"
+                      >
+                        Синхр.
+                      </button>
+                    }
+                    @if (canUnpublish(row)) {
+                      <button
+                        type="button"
+                        class="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                        [disabled]="isBusy(row.productId)"
+                        (click)="unpublish(row)"
+                      >
+                        Снять
+                      </button>
+                    }
+                    <a
+                      [routerLink]="['/admin/products', row.productId, 'edit']"
+                      class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                    >
+                      Товар
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="space-y-3 md:hidden">
+        @for (row of filteredRows(); track row.productId) {
+          <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex gap-3">
+              @if (row.photo) {
+                <img [src]="row.photo" alt="" class="h-14 w-14 rounded-xl object-cover" />
+              }
+              <div class="min-w-0 flex-1">
+                <p class="font-semibold text-slate-900">{{ row.name }}</p>
+                <p class="text-sm text-brand-700">{{ row.price | appCurrency }}</p>
+                <span [class]="statusBadgeClass(row.olx.status)" class="mt-2">{{ statusLabels[row.olx.status] }}</span>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              @if (canPublish(row)) {
+                <button type="button" class="btn-primary flex-1 justify-center py-1.5 text-xs !bg-violet-600 hover:!bg-violet-700" (click)="publish(row)">На OLX</button>
+              }
+              @if (canUnpublish(row)) {
+                <button type="button" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-600" (click)="unpublish(row)">Снять</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>

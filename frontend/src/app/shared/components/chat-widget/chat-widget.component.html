@@ -1,0 +1,136 @@
+<div class="chat-widget-root pointer-events-none fixed bottom-0 right-0 z-[50] p-4 sm:p-6">
+  @if (chat.open()) {
+    <div
+      class="chat-backdrop pointer-events-auto fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-[2px] sm:bg-slate-900/20"
+      (click)="close()"
+      aria-hidden="true"
+    ></div>
+
+    <section
+      class="chat-panel pointer-events-auto fixed z-[60] flex flex-col overflow-hidden border border-slate-200 bg-white shadow-2xl
+        inset-x-4 bottom-4 top-auto max-h-[min(78vh,560px)] rounded-2xl
+        sm:inset-x-auto sm:bottom-6 sm:right-6 sm:left-auto sm:h-[min(480px,72vh)] sm:w-[min(400px,calc(100vw-3rem))]"
+      role="dialog"
+      aria-label="Чат-помощник"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="flex shrink-0 items-center gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-900 to-brand-900 px-4 py-3 text-white">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-500/90 text-white shadow-md">
+          <app-icon name="message-circle" class="h-5 w-5" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <h2 class="text-sm font-semibold">Помощник Lombard</h2>
+          <p class="truncate text-xs text-slate-300">Навигация по сайту · онлайн</p>
+        </div>
+        <button
+          type="button"
+          class="rounded-lg p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+          (click)="close()"
+          aria-label="Закрыть чат"
+        >
+          <app-icon name="x" class="h-5 w-5" />
+        </button>
+      </header>
+
+      <div #messagesEl class="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+        @for (msg of chat.messages(); track msg.id) {
+          <div
+            class="flex"
+            [class.justify-end]="msg.role === 'user'"
+            [class.justify-start]="msg.role === 'bot'"
+          >
+            <div
+              class="max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm"
+              [class.bg-brand-600]="msg.role === 'user'"
+              [class.text-white]="msg.role === 'user'"
+              [class.rounded-br-md]="msg.role === 'user'"
+              [class.bg-slate-100]="msg.role === 'bot'"
+              [class.text-slate-800]="msg.role === 'bot'"
+              [class.rounded-bl-md]="msg.role === 'bot'"
+            >
+              <p class="whitespace-pre-line">{{ msg.text }}</p>
+              @if (msg.links?.length) {
+                <div class="mt-2 flex flex-wrap gap-2">
+                  @for (link of msg.links; track link.label) {
+                    <button
+                      type="button"
+                      class="rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-brand-700 shadow-sm ring-1 ring-brand-200 transition hover:bg-brand-50"
+                      (click)="navigateLink(link.route, link.queryParams)"
+                    >
+                      {{ link.label }}
+                    </button>
+                  }
+                </div>
+              }
+              <p
+                class="mt-1 text-[10px] opacity-70"
+                [class.text-brand-100]="msg.role === 'user'"
+                [class.text-slate-500]="msg.role === 'bot'"
+              >
+                {{ formatTime(msg.time) }}
+              </p>
+            </div>
+          </div>
+        }
+
+        @if (quickPanelOpen()) {
+          <div class="rounded-xl border border-gold-100 bg-gold-50/60 p-3">
+            <p class="mb-2 text-xs font-medium text-slate-600">Быстрые вопросы</p>
+            <div class="flex flex-wrap gap-2">
+              @for (q of chat.getQuickQuestions(); track q.id) {
+                <button
+                  type="button"
+                  class="rounded-full border border-gold-200 bg-white px-3 py-1.5 text-xs font-medium text-gold-900 shadow-sm transition hover:border-gold-300 hover:bg-gold-50"
+                  (click)="onQuick(q.message)"
+                >
+                  {{ q.label }}
+                </button>
+              }
+            </div>
+          </div>
+        } @else {
+          <button
+            type="button"
+            class="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-gold-300 bg-gold-50/50 py-2.5 text-xs font-medium text-gold-800 transition hover:bg-gold-100"
+            (click)="showQuickPanel()"
+          >
+            <app-icon name="chevron-right" class="h-3.5 w-3.5 -rotate-90" />
+            Показать быстрые вопросы
+          </button>
+        }
+      </div>
+
+      <form
+        class="shrink-0 border-t border-slate-100 bg-slate-50/80 p-3"
+        (ngSubmit)="submit($event)"
+      >
+        <div class="flex gap-2">
+          <input
+            type="text"
+            class="input-field min-w-0 flex-1"
+            placeholder="Напишите вопрос…"
+            [formControl]="input"
+            autocomplete="off"
+          />
+          <button
+            type="submit"
+            class="btn-primary shrink-0 px-4"
+            [disabled]="!input.value.trim()"
+            aria-label="Отправить"
+          >
+            <app-icon name="chevron-right" class="h-5 w-5" />
+          </button>
+        </div>
+      </form>
+    </section>
+  } @else {
+    <button
+      type="button"
+      class="chat-fab pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-lg shadow-brand-900/30 ring-4 ring-white transition hover:scale-105 hover:from-brand-500 hover:to-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+      (click)="openChat()"
+      aria-label="Открыть чат-помощник"
+    >
+      <app-icon name="message-circle" class="h-6 w-6" />
+    </button>
+  }
+</div>
